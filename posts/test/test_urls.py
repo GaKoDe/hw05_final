@@ -53,11 +53,7 @@ class StaticURLTests(TestCase):
             reverse('profile', args=[self.user]))
         self.assertEqual(response.status_code, 200)
 
-    if settings.DEBUG is False:
-        def test_404(self):
-            response = self.unauthorized_client.get(reverse('page_not_found'))
-            self.assertEqual(response.status_code, 404)
-
-        def test_500(self):
-            response = self.unauthorized_client.get(reverse('server_error'))
-            self.assertEqual(response.status_code, 500)
+    def test_404(self):
+        response = self.unauthorized_client.get('/wrong_adress/')
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, "misc/404.html")
