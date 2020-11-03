@@ -20,7 +20,7 @@
                   </div>
                 {% endfor %}
 
-                <form method="post" action="{% if edit %} {% url 'post_edit'  instance.author instance.id  %} {% else %} {% url 'new_post' %} {% endif %}">
+                <form method="post" enctype="multipart/form-data" action="{% if edit %} {% url 'post_edit'  instance.author instance.id  %} {% else %} {% url 'new_post' %} {% endif %}">
                     {% csrf_token %}
 
                     {% for field in form %}

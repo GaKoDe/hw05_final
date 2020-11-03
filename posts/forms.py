@@ -5,7 +5,7 @@ from .models import Post
 class CreatePostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('text', 'group')
+        fields = ('text', 'group', 'image')
         labels = {
             'text': 'Текст',
             'group': 'Группа',
