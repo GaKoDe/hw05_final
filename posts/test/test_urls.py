@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from posts.models import Post, Group
 from django.urls import reverse
+from django.conf import settings
 
 User = get_user_model()
 
@@ -51,3 +52,12 @@ class StaticURLTests(TestCase):
         response = self.authorized_client.get(
             reverse('profile', args=[self.user]))
         self.assertEqual(response.status_code, 200)
+
+    if settings.DEBUG is False:
+        def test_404(self):
+            response = self.unauthorized_client.get(reverse('page_not_found'))
+            self.assertEqual(response.status_code, 404)
+
+        def test_500(self):
+            response = self.unauthorized_client.get(reverse('server_error'))
+            self.assertEqual(response.status_code, 500)
