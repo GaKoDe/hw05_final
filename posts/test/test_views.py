@@ -27,7 +27,8 @@ class StaticURLTests(TestCase):
         cls.unauthorized_client = Client()
         cls.group = Group.objects.create(
             slug='test', title='test', description='test')
-        cls.post = Post.objects.create(text=p['text'], group=cls.group, author=cls.user)
+        cls.post = Post.objects.create(
+            text=p['text'], group=cls.group, author=cls.user)
 
     def check_urls(self, user, post, group):
         return [
@@ -38,10 +39,10 @@ class StaticURLTests(TestCase):
                     'group_posts', args=[group])]
 
     def test_posts(self):
-        response = self.authorized_client.get(reverse('post_view', args=[self.user,self.post.id]))
+        response = self.authorized_client.get(
+            reverse('post_view', args=[self.user, self.post.id]))
         self.assertEqual(response.status_code, 200)
-        cache.clear()
-        for page in self.check_urls(self.user, 1, self.group.slug):
+        for page in self.check_urls(self.user, self.post.pk, self.group.slug):
             get_page = self.authorized_client.get(page)
             get_page_unauth = self.unauthorized_client.get(page)
             self.assertContains(get_page, p['text'])
@@ -67,20 +68,23 @@ class StaticURLTests(TestCase):
     def test_is_img_in_db(self):
         uploaded = SimpleUploadedFile(
             'small.gif', p['small_gif'], content_type='image/gif')
-        response = self.authorized_client.post(
-            reverse("new_post"), {
-                'text': p['text'], 'group': self.group.pk,
-                'image': uploaded},
-            follow=True)
-        self.assertEqual(response.status_code, 200)
-        get_img = Post.objects.get(pk=2)
+        response = Post.objects.create(
+            text=p['text'],
+            group=self.group,
+            author=self.user,
+            image=uploaded)
+        get_img = Post.objects.get(pk=response.pk)
         self.assertNotEqual(get_img.image, '')
 
     def test_page_for_img(self):
         main_page = reverse('index')
         uploaded = SimpleUploadedFile(
             'small.gif', p['small_gif'], content_type='image/gif')
-        response = Post.objects.create(text=p['text'], group=self.group, author=self.user, image=uploaded)
+        response = Post.objects.create( # noqa
+            text=p['text'],
+            group=self.group,
+            author=self.user,
+            image=uploaded)
         cache.clear()
         get_page = self.authorized_client.get(main_page)
         get_page_unauth = self.unauthorized_client.get(main_page)
@@ -90,7 +94,11 @@ class StaticURLTests(TestCase):
     def test_pages_for_img(self):
         uploaded = SimpleUploadedFile(
             'small.gif', p['small_gif'], content_type='image/gif')
-        response = Post.objects.create(text=p['text'], group=self.group, author=self.user, image=uploaded)
+        response = Post.objects.create(
+            text=p['text'],
+            group=self.group,
+            author=self.user,
+            image=uploaded)
         cache.clear()
         for page in self.check_urls(self.user, response.pk, self.group.slug):
             get_page = self.authorized_client.get(page)
@@ -106,16 +114,29 @@ class StaticURLTests(TestCase):
             self.assertNotContains(response, "test_id")
 
     def test_index_cache(self):
-        # Тест работает но я не понимаю почему так.
-        # Спросить на ревью
-        with self.assertNumQueries(7):
-            response = self.authorized_client.get(reverse("index"))
-            self.assertEqual(response.status_code, 200)
-            response = self.authorized_client.get(reverse("index"))
-            self.assertEqual(response.status_code, 200)
+        get_old_page = self.authorized_client.get(reverse('index'))
+        self.assertContains(get_old_page, p['text'])
+        get_old_page_unauth = self.unauthorized_client.get(reverse('index'))
+        self.assertContains(get_old_page_unauth, p['text'])
+        response = self.authorized_client.post( # noqa
+            reverse(
+                'post_edit', args=[
+                    self.user, self.group.pk]), {
+                'text': p['edited_text']},
+            follow=True)
+        get_new_page = self.authorized_client.get(reverse('index'))
+        get_new_page_unauth = self.unauthorized_client.get(reverse('index'))
+        self.assertNotContains(get_new_page, p['edited_text'])
+        self.assertNotContains(get_new_page_unauth, p['edited_text'])
+        cache.clear()
+        get_newest_page = self.authorized_client.get(reverse('index'))
+        get_newest_page_unauth = self.unauthorized_client.get(reverse('index'))
+        self.assertContains(get_newest_page, p['edited_text'])
+        self.assertContains(get_newest_page_unauth, p['edited_text'])
 
     def test_unauth_comment(self):
-        response = self.authorized_client.get(reverse('post_view', args=[self.user,self.post.id]))
+        response = self.authorized_client.get(
+            reverse('post_view', args=[self.user, self.post.id]))
         self.assertEqual(response.status_code, 200)
         make_comment_response = self.unauthorized_client.get(
             reverse("add_comment", args=[self.user, self.post.pk]))
@@ -132,7 +153,8 @@ class StaticURLTests(TestCase):
             target_status_code=200)
 
     def test_auth_comment(self):
-        response = self.authorized_client.get(reverse('post_view', args=[self.user,self.post.id]))
+        response = self.authorized_client.get(
+            reverse('post_view', args=[self.user, self.post.id]))
         self.assertEqual(response.status_code, 200)
         make_comment_response = self.authorized_client.post(
             reverse("add_comment", args=[self.user, self.post.pk]), {
@@ -172,7 +194,6 @@ class StaticURLTests(TestCase):
         self.assertEqual(check_follower_in_db.count(), 0)
 
     def test_follower(self):
-        response = self.authorized_client.get(reverse('post_view', args=[self.user,self.post.id]))
         follow = self.authorized_client_follower.get(
             reverse("profile_follow", args=[self.user]))
         self.assertRedirects(follow, reverse('profile', args=[self.user]),

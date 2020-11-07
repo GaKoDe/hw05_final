@@ -41,21 +41,14 @@ def new_post(request):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.author_posts.filter(author__username=author)
-    paginator = Paginator(post_list, 5)
+    if request.user.is_authenticated:
+        following = Follow.objects.filter(user=request.user.id,
+                                          author=author).exists()
+    paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    item_dict = {
-        'author': author,
-        'page': page,
-        'paginator': paginator,
-
-    }
-    if not request.user.is_anonymous:
-        following = Follow.objects.filter(user=request.user,
-                                          author=author).exists()
-        item_dict['following'] = following
-
-    return render(request, "main_tempaltes/profile.html", item_dict
+    return render(request, "main_tempaltes/profile.html", {'author': author,
+                  'page': page, 'paginator': paginator}
                   )
 
 
@@ -147,6 +140,5 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     follow_to_delete = Follow.objects.filter(user=request.user,
-                                             author=author)
-    follow_to_delete.delete()
+                                             author=author).delete()
     return redirect('profile', username=username)
