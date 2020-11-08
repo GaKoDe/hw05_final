@@ -18,10 +18,10 @@ class Post(models.Model):
     pub_date = models.DateTimeField('date published', auto_now_add=True,
                                     db_index=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='author_posts')
+                               related_name='author')
     group = models.ForeignKey(Group, on_delete=models.SET_NULL,
                               null=True, blank=True, verbose_name='Group',
-                              related_name='group_posts')
+                              related_name='group')
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
     class Meta:
@@ -34,7 +34,7 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True,
                              blank=True, verbose_name='Comment',
-                             related_name='post_comments')
+                             related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='comment_author')
     text = models.TextField()
