@@ -2,17 +2,21 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from posts.models import Post, Group
 from django.urls import reverse
-from .presets import PRESETS as p
+
 
 User = get_user_model()
 
 
 class StaticURLTests(TestCase):
+    PRESETS = {
+        'username': 'StasBasov',
+        'text': 'Это текст публикации',
+    }
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username=p['username'])
+        cls.user = User.objects.create_user(username=cls.PRESETS['username'])
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
         cls.unauthorized_client = Client()
@@ -30,17 +34,22 @@ class StaticURLTests(TestCase):
     def test_new_post(self):
         current_posts_count = Post.objects.count()
         response = self.authorized_client.post(
-            reverse("new_post"), {
-                'text': p['text'], 'group': self.group.pk},
+            reverse("new_post"),
+            {
+                'text': self.PRESETS['text'],
+                'group': self.group.pk
+            },
             follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Post.objects.count(), current_posts_count + 1)
 
     def test_unauthorized_user_newpage(self):
         response = self.unauthorized_client.get(reverse("new_post"))
-        self.assertRedirects(response, reverse('login') + '?next=' +
+        self.assertRedirects(response,
+                             reverse('login') + '?next=' +
                              reverse('new_post'),
-                             status_code=302, target_status_code=200)
+                             status_code=302, target_status_code=200
+                            )
 
     def test_profile_page(self):
         response = self.authorized_client.get(
