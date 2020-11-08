@@ -12,7 +12,7 @@ def index(request):
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'main_tempaltes/index.html',
+    return render(request, 'main_templates/index.html',
                   {'page': page, 'paginator': paginator})
 
 
@@ -22,7 +22,7 @@ def group_posts(request, slug):
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'main_tempaltes/group.html',
+    return render(request, 'main_templates/group.html',
                   {'group': group, 'page': page, 'paginator': paginator})
 
 
@@ -35,7 +35,7 @@ def new_post(request):
             post.author = request.user
             post.save()
             return redirect('index')
-    return render(request, 'main_tempaltes/new_post.html', {'form': form})
+    return render(request, 'main_templates/new_post.html', {'form': form})
 
 
 def profile(request, username):
@@ -47,7 +47,7 @@ def profile(request, username):
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, "main_tempaltes/profile.html", {'author': author,
+    return render(request, "main_templates/profile.html", {'author': author,
                   'page': page, 'paginator': paginator}
                   )
 
@@ -58,7 +58,7 @@ def post_view(request, username, post_id):
     comments = post.post_comments.all()
 
     form = CommentForm()
-    return render(request, 'main_tempaltes/post.html',
+    return render(request, 'main_templates/post.html',
                   {'post': post,
                    'author': author,
                    'form': form,
@@ -81,7 +81,7 @@ def post_edit(request, username, post_id):
             return redirect("post_view", username=request.user.username,
                             post_id=post_id)
 
-    return render(request, "main_tempaltes/new_post.html",
+    return render(request, "main_templates/new_post.html",
                   {"form": form, "post": instance}, )
 
 
@@ -108,7 +108,7 @@ def add_comment(request, username, post_id):
             return redirect('post_view', username=username,
                             post_id=post_id)
 
-    return render(request, 'main_tempaltes/post.html',
+    return render(request, 'main_templates/post.html',
                   {'post': post,
                    'author': author,
                    'form': form,
@@ -123,7 +123,7 @@ def follow_index(request):
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(request, 'main_tempaltes/follow.html',
+    return render(request, 'main_templates/follow.html',
                   {'page': page, 'paginator': paginator})
 
 
