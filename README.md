@@ -16,3 +16,7 @@
  - Pytest 
  - Pillow 
  - Bootstrap
+
+
+## todo
+ - Добавить пункт с установкой проекта
