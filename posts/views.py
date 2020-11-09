@@ -18,7 +18,7 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    post_list = group.group.all()
+    post_list = group.posts.all()
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -40,7 +40,7 @@ def new_post(request):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    post_list = author.author.filter(author__username=author)
+    post_list = author.posts.filter(author__username=author)
     if request.user.is_authenticated:
         following = Follow.objects.filter(user=request.user.id,
                                           author=author).exists()
@@ -136,7 +136,8 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    author = User.objects.get(username=username)
-    follow_to_delete = Follow.objects.filter(user=request.user,
-                                             author=author).delete()
+    follow_to_delete = Follow.objects.filter(
+                                            user=request.user,
+                                            author__username__contains=username
+                                             ).delete()
     return redirect('profile', username=username)

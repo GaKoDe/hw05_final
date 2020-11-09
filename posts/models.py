@@ -18,10 +18,10 @@ class Post(models.Model):
     pub_date = models.DateTimeField('date published', auto_now_add=True,
                                     db_index=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='author')
+                               related_name='posts')
     group = models.ForeignKey(Group, on_delete=models.SET_NULL,
                               null=True, blank=True, verbose_name='Group',
-                              related_name='group')
+                              related_name='posts')
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
     class Meta:

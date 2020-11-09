@@ -199,7 +199,7 @@ class StaticURLTests(TestCase):
         check_follower_in_db = Follow.objects.filter(
             author__username__contains=self.user,
             user__username__contains=self.follower).exists()
-        self.assertEqual(check_follower_in_db, False)
+        self.assertFalse(check_follower_in_db, False)
 
     def test_follower(self):
         follow = self.authorized_client_follower.get(
@@ -211,7 +211,7 @@ class StaticURLTests(TestCase):
             reverse('follow_index'))
         self.assertContains(check_follow, self.PRESETS['text'])
 
-    def test_unauth_follower(self):
+    def test_is_unauth_can_follow(self):
         follow = self.authorized_client_follower.get(
             reverse("profile_follow", args=[self.user]))
         self.assertRedirects(follow, reverse('profile', args=[self.user]),
