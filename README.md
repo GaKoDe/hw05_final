@@ -18,5 +18,25 @@
  - Bootstrap
 
 
-## todo
- - Добавить пункт с установкой проекта
+# Установка
+
+**Для начала установите python, тестирование проводилось на версии 3.7**
+
+ - [ ] https://www.python.org/downloads/windows/
+
+**Затем установите виртуальное окружение**
+
+ - [ ] https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#installing-virtualenv
+
+**Скачайте репозиторий и распакуйте его в удобную для вас папку
+Запустите виртуальное окружение**
+
+ - [ ] https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
+
+**Выполните установку необходимых для работы пакетов**
+
+ - [ ] https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#installing-packages
+
+**В командной строке виртуального окружения выполните команду cd .../hw05_final (где ... путь до папки с проектом)**
+**В проекте выполните команду python manage.py runserver
+Перейдите по адресу http://127.0.0.1:8000**
