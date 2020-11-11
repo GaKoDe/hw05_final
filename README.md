@@ -37,7 +37,7 @@
 
  - [ ] https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#installing-packages
 
-**В командной строке виртуального окружения выполните команду cd .../hw05_final (где ... путь до папки с проектом)**
-**Выполните команду python manage.py migrate**
-**В проекте выполните команду python manage.py runserver**
+**В командной строке виртуального окружения выполните команду cd .../hw05_final (где ... путь до папки с проектом)**  
+**Выполните команду python manage.py migrate**  
+**В проекте выполните команду python manage.py runserver**  
 **Перейдите по адресу http://127.0.0.1:8000**
